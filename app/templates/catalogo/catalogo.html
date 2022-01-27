@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block contenido %}
+    <div class="columns m-0">
+        <div class="column px-6 py-4">
+            <div class="box has-background-grey-dark has-text-light" style="height: 100%;">
+                <h1 class="title is-4 has-text-light has-text-weight-bold">CATÁLOGO</h1>
+                <div class="columns no-min-height m-0" style="height: auto;">
+                    <div class="column p-0">
+                        <div class="control has-icons-left mb-2" style="height: 40px;">
+                            <input class="input is-small is-pulled-left" type="text" id="busqueda" placeholder="Buscar" style="width: 80%;" onkeyup="buscarConc(0, 1, 2, 3)">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="column p-0">
+                        <div class="field has-addons mb-2 is-pulled-right">
+                            <p class="control">
+                                <button class="button is-static" style="font-size: 0.8em;">
+                                  <span class="icon"><i class="fa fa-filter"></i></span>
+                                  <span>Filtrar</span>
+                                </button>
+                              </p>
+                            <p class="control select is-small is-fullwidth">
+                                <select id="filtro_cop">
+                                    <option selected>Ver todos</option>
+                                    <option value="clientes">Clientes</option>
+                                    <option value="proveedores">Proveedores</option>
+                                </select>
+                            </p>
+                          </div>
+                    </div>
+                </div>
+                <div class="columns no-min-height m-0 mb-2" style="height: 70%;">
+                    <div id="cont-tarjetas" class="column has-background-grey-lighter mb-0 pr-0" style="border-radius: 6px;">
+                        <div class="columns no-min-height m-0 pb-2 pr-4" style="height: auto;">
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6"><span id="s_num_registro">No. de Cliente / Proveedor</span></p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6"><span id="s_nom">Nombre de Cliente / Proveedor</span></p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">RFC</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">Correo</p>
+                            </div>
+                        </div>
+                        <!-- MODAL -->
+                        <div class="modal">
+                            <div class="modal-background"></div>
+                            <div class="modal-card">
+                              <header class="modal-card-head">
+                                <p class="modal-card-title">Detalles de registro</p>
+                                <button class="delete close" aria-label="close"></button>
+                              </header>
+                              <section class="modal-card-body has-text-black">
+                                <table class="table is-bordered is-centered m-auto">
+                                    <tbody>
+                                        <tr>
+                                            <th><span id="h_num_registro">Número de Cliente/Proveedor</span></th>
+                                            <td><span id="num_registro"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th><span id="h_nom">Nombre del Cliente/Proveedor</span></th>
+                                            <td><span id="nom"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Dirección</th>
+                                            <td><span id="dir"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Teléfono</th>
+                                            <td><span id="tel"></span></td>
+                                        </tr>
+                                        <tr id="tr_rfc">
+                                            <th>RFC</th>
+                                            <td><span id="rfc"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Correo</th>
+                                            <td><span id="correo"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                              </section>
+                              <footer class="modal-card-foot is-centered">
+                                {% if chkAllPermissions(usuario, 'catalogo', 'u') %}
+                                <a class="button is-black" id="editar"><span class="icon"><i class="fas fa-pencil-alt"></i></span>
+                                    <span>Editar</span>
+                                </a>
+                                {% endif %}
+                                {% if chkAllPermissions(usuario, 'catalogo', 'd') %}
+                                <div class="dropdown is-up">
+                                    <div class="dropdown-trigger">
+                                      <button class="button is-danger" aria-haspopup="true" aria-controls="dropdown-borrar">
+                                        <span class="icon"><i class="fas fa-trash"></i></span>
+                                        <span>Borrar</span>
+                                      </button>
+                                    </div>
+                                    <div class="dropdown-menu" id="dropdown-borrar" role="menu">
+                                      <div class="dropdown-content">
+                                        <div class="dropdown-item pb-0">
+                                            <p class="has-text-weight-semibold pb-3">¿Desea borrar de manera permanente?</p>
+                                            <a class="button is-fullwidth has-text-weight-semibold has-text-danger-dark py-1" id="borrar">
+                                                <span class="icon"><i class="fas fa-check"></i></span>
+                                                <span>Sí</span>
+                                            </a>
+                                            <a class="button is-fullwidth has-text-weight-semibold has-text-dark py-1">
+                                                <span class="icon"><i class="fas fa-times"></i></span>
+                                                <span>No</span>
+                                            </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% endif %}
+                              </footer>
+                            </div>
+                          </div>
+                        <!-- TARJETAS -->
+                        <div class="box has-background-grey-lighter has-text-light m-0 p-0 pr-3" style="box-shadow: none; height: 90%; overflow-y: auto;">
+                        {% if registros|length > 0%}
+                        {% for i in registros %}
+                        <a class="tarjeta-lg c {{clicked}} button is-fullwidth mb-1 p-0 py-2 has-background-grey-light has-text-black has-text-weight-semibold" id="{{ i['_id'] }}"
+                        data-num_registro="{{ i['num_registro'] }}" data-nom="{{ i['nom'] }}" data-dir="{{ i['dir'] }}" data-tel="{{ i['tel'] }}"
+                        data-rfc="{{ i['rfc'] }}" data-correo="{{ i['correo'] }}" data-tipo="{{ i['tipo'] }}">
+                            <div class="columns no-min-height m-0 pb-2">
+                                <div class="column p-0">
+                                    <p>{{ i['num_registro'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p>{{ i['nom'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p>{{ i['rfc'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p>{{ i['correo'] }}</p>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                        {% else %}
+                        <div class="columns is-vcentered m-auto">
+                            <div class="column is-centered">
+                                <span class="icon is-xlarge has-text-grey"><i class="far fa-folder-open fa-4x"></i></span>
+                                <h1 class="title is-5 has-text-grey pt-2">No hay registros en el catálogo</h1>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    </div>
+                </div>
+                {% if chkAllPermissions(usuario, 'catalogo', 'c') %}
+                <a class="button has-text-weight-semibold is-black mb-4" href="/addC">
+                    <span class="icon">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    <span>Agregar nuevo registro</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

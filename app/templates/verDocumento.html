@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block contenido %}
+    <div class="columns m-0">
+        <div class="column px-6 py-4">
+            <div class="box has-background-grey-dark has-text-light" style="height: 100%;">
+              <!-- TITULO CON BREADCRUMB -->
+              <div class="columns no-min-height m-0" style="height: auto">
+                <div class="column is-3 has-text-left p-0">
+                  <a class="is-crumb has-text-grey-lighter has-text-weight-bold" href="{{ link }}">
+                    <span class="icon"><i class="fa fa-chevron-left"></i></span>
+                    <span>{{titulo}}</span>
+                  </a>
+                </div>
+                <div class="column p-0">
+                  <h1 class="title is-4 has-text-light has-text-weight-bold">{{ file }}</h1>
+                </div>
+                <div class="column is-3 p-0">
+                  <a class="button has-text-weight-semibold is-black is-pulled-right mr-4" href="/descargar/{{id}}">
+                    <span class="icon">
+                        <i class="fa fa-file-download"></i>
+                    </span>
+                    <span>Descargar</span>
+                </a>
+                </div>
+              </div>
+              <div class="columns m-0" style="height: calc(100% - 0.25rem)">
+                <div class="column mb-5">
+                    <div class="box has-background-white-ter no-min-height m-0 mb-2" style="height: 100%;">
+                      <iframe width="100%" height="100%" src="/file/{{id}}"></iframe>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

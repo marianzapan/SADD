@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block alerta %}
+  {% if disp == True %}
+  <div class="notification is-danger has-text-centered mb-0" id="login">
+  {% else %}
+  <div class="notification is-danger has-text-centered mb-0" id="login" style="display: none;">
+  {% endif %}
+      <button class="delete"></button>
+      <p class="is-size-5"><span class="title is-4">El número de factura ya existe.</span> Vuelva a intentarlo.</p>
+  </div>
+{% endblock %}
+{% block contenido %}
+    <div class="columns m-0">
+        <div class="column px-6 py-4">
+            <div class="box has-background-grey-dark has-text-light" style="height: 100%;">
+              <!-- TITULO CON BREADCRUMB -->
+              <div class="columns no-min-height m-0 mb-5" style="height: auto">
+                <div class="column is-3 has-text-left p-0">
+                  <a class="is-crumb has-text-grey-lighter has-text-weight-bold" href="/proveedores">
+                    <span class="icon"><i class="fa fa-chevron-left"></i></span>
+                    <span>Facturas de proveedores</span>
+                    </a>
+                </div>
+                <div class="column p-0" style="padding-right: 25% !important;">
+                  <h1 class="title is-4 has-text-light has-text-weight-bold">EDITAR FACTURA DE PROVEEDORES</h1>
+                </div>
+              </div>
+                <form class="lg" method="POST" enctype="multipart/form-data">
+                    <div class="columns no-min-height m-0 pt-5" style="height: calc(100% - 6rem);">
+                        <div class="column py-0 px-6 mx-5">
+                            <div class="field has-text-left">
+                                <label class="label subtitle is-6 has-text-light">Número de factura</label>
+                                <div class="control">
+                                    <input class="input" name="num_factura" type="text" value="{{ i['num_factura'] }}" required>
+                                  </div>
+                            </div>
+                            <div class="field has-text-left">
+                                <label class="label subtitle is-6 has-text-light">Fecha de factura</label>
+                                <div class="control">
+                                    <input class="input" name="fecha_factura" type="date" value="{{ i['fecha_factura'] }}" required>
+                                  </div>
+                            </div>
+                            <div class="field has-text-left">
+                              <label class="label subtitle is-6 has-text-light">Nombre del proveedor</label>
+                              <div class="field has-addons is-fullwidth">
+                                  <div class="control is-expanded">
+                                      <select class="selectize" name="num_registro" style="height: 32px !important;">
+                                        <option selected value="{{ i['num_registro'] }}">{{ i['nom'] }}</option>
+                                        {% for j in registros %}
+                                          <option value="{{ j['num_registro'] }}">{{ j['nom'] }}</option>
+                                        {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div class="control">
+                                    <a class="button is-black" href="/addCP" style="font-size: 0.8em;">
+                                      <span class="icon" style="display: block;"><i class="fa fa-plus"></i></span>
+                                      <span>Agregar nuevo</span>
+                                    </a>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="field has-text-left">
+                                <label class="label subtitle is-6 has-text-light">Número del pedimento</label>
+                                <div class="field has-addons is-fullwidth">
+                                  <div class="control is-expanded">
+                                    <select class="selectize" name="num_pedimento" style="height: 32px !important;">
+                                      <option selected hidden value="{{ i['num_pedimento'] }}">{{ i['num_pedimento'] }}</option>
+                                      {% for j in pedimentos %}
+                                        <option value="{{ j['num_pedimento'] }}">{{ j['num_pedimento'] }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                                  <div class="control">
+                                    <a class="button is-black" href="/addP" style="font-size: 0.8em;">
+                                      <span class="icon" style="display: block;"><i class="fa fa-plus"></i></span>
+                                      <span>Agregar nuevo</span>
+                                    </a>
+                                  </div>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="column py-0 px-6 mx-5">
+                          <div class="field has-addons has-text-left">
+                            <div class="control has-text-weight-semibold mb-2" style="height: 52px;">
+                              <label class="label subtitle is-6 has-text-light">¿Ampara equipo?</label>
+                                <label class="radio pr-4">
+                                  <input class="mr-2" type="radio" name="ampara" id="si_ampara" required>Sí
+                                </label>
+                                <label class="radio">
+                                  <input class="mr-2" type="radio" name="ampara" id="no_ampara" checked>No
+                                </label>
+                              </div>
+                              <div class="control ml-6 is-expanded" id="vencimiento" style="display: none;">
+                                <label class="label subtitle is-6 has-text-light">Fecha de vencimiento</label>
+                                <input class="input" name="fecha_venc" type="date" style="width: 100%;" value="{{ i['fecha_venc'] }}">
+                              </div>
+                          </div>
+                            <div class="field has-text-left">
+                              <label class="label subtitle is-6 has-text-light">¿Desea agregar documento electrónico?</label>
+                              <div class="control has-text-weight-semibold mb-2" style="height: 32px;">
+                                  <label class="radio pr-4">
+                                    <input class="mr-2" type="radio" name="doc" id="si_doc" value="Si" required>Sí
+                                  </label>
+                                  <label class="radio">
+                                    <input class="mr-2" type="radio" name="doc" id="no_doc" value="No" checked>No
+                                  </label>
+                                </div>
+                            </div>
+                            <div class="docs" style="display: none;">
+                            <div class="field has-text-left">
+                                <label class="label subtitle is-6 has-text-light">Liga de XML</label>
+                                <div class="file is-black is-small has-name is-fullwidth is-right" id="xml">
+                                  <label class="file-label">
+                                    <input class="file-input" name="xml" type="file" accept=".xml">
+                                    <span class="file-cta" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                                      <span class="file-icon">
+                                        <i class="fas fa-upload"></i>
+                                      </span>
+                                      <span class="file-label">Seleccionar archivo...</span>
+                                    </span>
+                                    <span class="file-name has-background-light has-text-black">{{ i['xml_file'] }}</span>
+                                  </label>
+                                </div>
+                            </div>          
+                            <div class="field has-text-left">
+                                <label class="label subtitle is-6 has-text-light">Liga de PDF</label>
+                                <div class="file is-black is-small has-name is-fullwidth is-right" id="pdf">
+                                    <label class="file-label">
+                                      <input class="file-input" name="pdf" type="file" accept=".pdf">
+                                      <span class="file-cta">
+                                        <span class="file-icon">
+                                          <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">Seleccionar archivo...</span>
+                                      </span>
+                                      <span class="file-name has-background-light has-text-black">{{ i['pdf_file'] }}</span>
+                                    </label>
+                                  </div>
+                            </div>   
+                          </div>                   
+                        </div>
+                    </div>
+                    <button class="button has-text-weight-semibold is-black mt-6 mb-4" type="submit">
+                      <span class="icon">
+                          <i class="fa fa-plus"></i>
+                      </span>
+                      <span>Editar factura</span>
+                    </button>
+              </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

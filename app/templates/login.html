@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block alerta %}
+{% if disp == True %}
+<div class="notification is-danger has-text-centered mb-0" id="login">
+{% else %}
+<div class="notification is-danger has-text-centered mb-0" id="login" style="display: none;">
+{% endif %}
+    {% if expired == True %}
+    <button class="delete"></button>
+    <p class="is-size-5"><span class="title is-4">Su autorización expiró.</span> Vuelva a iniciar sesión.</p>
+    {% else %}
+    <button class="delete"></button>
+    <p class="is-size-5"><span class="title is-4">Usuario y/o contraseña incorrectos.</span> Vuelva a intentarlo.</p>
+    {% endif %}    
+</div>
+{% endblock %}
+
+{% block contenido %}
+<div class="columns is-vcentered is-centered m-0">
+    <div class="column is-one-third-widescreen is-half is-half-tablet is-centered">
+        <div class="box has-background-grey-dark has-text-light px-6">
+            <h1 class="title is-3 is-size-4-mobile pt-5 pb-2 has-text-weight-bold has-text-light">INICIAR SESIÓN</h1>
+            <form method="POST">
+                <div class="field pb-4">
+                    <label class="label subtitle is-5 is-size-5-mobile has-text-light pb-1">Usuario</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" name="usuario" placeholder="Introducir usuario">
+                        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label subtitle is-5 is-size-5-mobile has-text-light pb-1">Contraseña</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="password" name="password" placeholder="Introducir contraseña">
+                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                    </div>
+                </div>
+                <br>
+                <div class="field pb-5">
+                    <div class="control">
+                        <button type="submit" class="button is-black px-6">Aceptar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

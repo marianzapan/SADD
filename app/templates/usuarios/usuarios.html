@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block contenido %}
+    <div class="columns m-0">
+        <div class="column px-6 py-4">
+            <div class="box has-background-grey-dark has-text-light" style="height: 100%;">
+                <h1 class="title is-4 has-text-light has-text-weight-bold">USUARIOS</h1>
+                <div class="control has-icons-left mb-2" style="height: 40px;">
+                    <input class="input is-small" type="text" id="busqueda" placeholder="Buscar" style="width: 40%; float: left;" onkeyup="buscarConc(0, 1, 2)">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+                <div class="columns no-min-height m-0 mb-2" style="height: 70%;">
+                    <div id="cont-tarjetas" class="column has-background-grey-lighter mb-0 pr-0" style="border-radius: 6px;">
+                        <div class="columns no-min-height m-0 pb-2 pr-4" style="height: auto;">
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">Asignación</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">Nombre de usuario</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">Contraseña</p>
+                            </div>
+                        </div>
+                        <!-- MODAL -->
+                        <div class="modal">
+                            <div class="modal-background"></div>
+                            <div class="modal-card">
+                              <header class="modal-card-head">
+                                <p class="modal-card-title">Detalles de usuario</p>
+                                <button class="delete close" aria-label="close"></button>
+                              </header>
+                              <section class="modal-card-body has-text-black">
+                                <table class="table is-bordered is-centered m-auto">
+                                    <tbody>
+                                        <tr>
+                                            <th>Asignación</th>
+                                            <td><span id="asignacion"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nombre de usuario</th>
+                                            <td><span id="nom"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Contraseña</th>
+                                            <td>
+                                                <span id="password" class="password" style="-webkit-text-security: disc !important"></span>
+                                                <span id="eyePassword" class="is-clickable is-pulled-right icon has-text-dark"><i class="fas fa-eye"></i></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Permisos</th>
+                                            <td style="padding: 0;">
+                                                <table class="table is-size-7">
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>Agregar</th>
+                                                        <th>Ver</th>
+                                                        <th>Editar</th>
+                                                        <th>Borrar</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>F. Proveedores</th>
+                                                        <td><span id="fp_c"></span></td>
+                                                        <td><span id="fp_r"></td>
+                                                        <td><span id="fp_u"></td>
+                                                        <td><span id="fp_d"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>F. Clientes</th>
+                                                        <td><span id="fc_c"></span></td>
+                                                        <td><span id="fc_r"></td>
+                                                        <td><span id="fc_u"></td>
+                                                        <td><span id="fc_d"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Pedimentos</th>
+                                                        <td><span id="p_c"></span></td>
+                                                        <td><span id="p_r"></td>
+                                                        <td><span id="p_u"></td>
+                                                        <td><span id="p_d"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Packing Lists</th>
+                                                        <td><span id="pl_c"></span></td>
+                                                        <td><span id="pl_r"></td>
+                                                        <td><span id="pl_u"></td>
+                                                        <td><span id="pl_d"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Catálogo</th>
+                                                        <td><span id="c_c"></span></td>
+                                                        <td><span id="c_r"></td>
+                                                        <td><span id="c_u"></td>
+                                                        <td><span id="c_d"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Archivos</th>
+                                                        <td><span id="a_c"></span></td>
+                                                        <td><span id="a_r"></td>
+                                                        <td><span id="a_u"></td>
+                                                        <td><span id="a_d"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Usuarios</th>
+                                                        <td><span id="u_c"></span></td>
+                                                        <td><span id="u_r"></td>
+                                                        <td><span id="u_u"></td>
+                                                        <td><span id="u_d"></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                              </section>
+                              <footer class="modal-card-foot is-centered">
+                                {% if chkAllPermissions(usuario, 'usuarios', 'u') %}
+                                <a class="button is-black" id="editar"><span class="icon"><i class="fas fa-pencil-alt"></i></span>
+                                    <span>Editar</span>
+                                </a>
+                                {% endif %}
+                                {% if chkAllPermissions(usuario, 'usuarios', 'd') %}
+                                <div class="dropdown is-up">
+                                    <div class="dropdown-trigger">
+                                      <button class="button is-danger" aria-haspopup="true" aria-controls="dropdown-borrar">
+                                        <span class="icon"><i class="fas fa-trash"></i></span>
+                                        <span>Borrar</span>
+                                      </button>
+                                    </div>
+                                    <div class="dropdown-menu" id="dropdown-borrar" role="menu">
+                                      <div class="dropdown-content">
+                                        <div class="dropdown-item pb-0">
+                                            <p class="has-text-weight-semibold pb-3">¿Desea borrar de manera permanente?</p>
+                                            <a class="button is-fullwidth has-text-weight-semibold has-text-danger-dark py-1" id="borrar">
+                                                <span class="icon"><i class="fas fa-check"></i></span>
+                                                <span>Sí</span>
+                                            </a>
+                                            <a class="button is-fullwidth has-text-weight-semibold has-text-dark py-1">
+                                                <span class="icon"><i class="fas fa-times"></i></span>
+                                                <span>No</span>
+                                            </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% endif %}
+                              </footer>
+                            </div>
+                          </div>
+                        <!-- TARJETAS -->
+                        <div class="box has-background-grey-lighter has-text-light m-0 p-0 pr-3" style="box-shadow: none; height: 90%; overflow-y: auto;">
+                        {% if usuarios|length > 0%}
+                        {% for i in usuarios %}
+                        <a class="tarjeta-lg u button is-fullwidth mb-1 p-0 py-2 has-background-grey-light has-text-black has-text-weight-semibold" id="{{ i['_id'] }}"
+                        data-asignacion="{{ i['asignacion'] }}" data-nom="{{ i['user'] }}" data-password="{{ i['password'] }}" data-roles="{{ i['roles'] }}">
+                            <div class="columns no-min-height m-0 pb-2">
+                                <div class="column p-0">
+                                    <p>{{ i['asignacion'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p>{{ i['user'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p style="-webkit-text-security: disc !important">{{ i['password'] }}</p>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                        {% else %}
+                        <div class="columns is-vcentered m-auto">
+                            <div class="column is-centered">
+                                <span class="icon is-xlarge has-text-grey"><i class="far fa-folder-open fa-4x"></i></span>
+                                <h1 class="title is-5 has-text-grey pt-2">No hay usuarios registados</h1>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    </div>
+                </div>
+                {% if chkAllPermissions(usuario, 'usuarios', 'c') %}
+                <a class="button has-text-weight-semibold is-black mb-4" href="/addUsuario">
+                    <span class="icon">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    <span>Agregar nuevo usuario</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

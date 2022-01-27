@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../static/bulma/css/bulma.css">
+        <link rel="stylesheet" href="../static/fa-icons/css/all.css">
+        <link rel="stylesheet" href="../static/sadd.css">
+        <script src="../static/jquery.js"></script>
+        <script src="../static/selectize.min.js"></script>
+        <link rel="stylesheet" href="../static/selectize.bootstrap3.css">
+        <title>{{ titulo }}</title>
+    </head>
+    <body class="is-flex"> 
+        {% for message in get_flashed_messages() %}
+        <div class="notification is-danger has-text-centered mb-0">
+            <button class="delete"></button>
+            <p class="is-size-7"><span class="title is-5">{{message}}</span></p>   
+        </div>
+        {% endfor %}     
+        {% block alerta %}
+        {% endblock %}
+
+        <nav class="navbar has-background-dark" role="navigation" aria-label="main navigation">
+            <div class="navbar-menu has-background-dark is-active" style="min-height: 68px;">
+                <a class="navbar-item" href="/">
+                    <!--<img src="https://bulma.io/images/bulma-logo.png" width="100">-->
+                    <h1 class="has-text-light title is-4 is-size-5-mobile pl-2">Sistema para Administrar Documentos Digitales</h1>
+                </a>
+            </div>
+            {% if usuario %}
+            <div class="navbar-end has-background-dark is-active">
+                <div class="navbar-item">
+                    <a class="button is-black" id="logout" href="/logout">{{ usuario }}, Cerrar sesión</a>
+                </div>
+            </div>
+            {% endif %}
+        </nav>
+
+        <div class="container has-text-centered has-background-blue-dark m-0" id="main">
+            <div class="columns is-centered m-0">
+                <div id="sidenav" class="subtitle is-5">
+                    {% if usuario %}
+                    <ul>
+                        <li>
+                            {% if 'catalogo' in chkReadPermissions(usuario) %}
+                            <a href="/catalogo">
+                                <i class="fa fa-address-book"></i><span>Catálogo</span>
+                            </a>
+                            {% endif %}
+                            {% if 'fp' in chkReadPermissions(usuario) %}
+                            <a href="/proveedores">
+                                <i class="fa fa-store"></i><span>Facturas de proveedores</span>
+                            </a>
+                            {% endif %}
+                            {% if 'fc' in chkReadPermissions(usuario) %}
+                            <a href="/clientes">
+                                <i class="fa fa-user"></i><span>Facturas de clientes</span>
+                            </a>
+                            {% endif %}
+                            {% if 'pedimentos' in chkReadPermissions(usuario) %}
+                            <a href="/pedimentos">
+                                <i class="fa fa-box-open"></i><span>Pedimentos</span>
+                            </a>
+                            {% endif %}
+                            {% if 'archivos' in chkReadPermissions(usuario) %}
+                            <a href="/archivos">
+                                <i class="fa fa-file"></i><span>Archivos</span>
+                            </a>
+                            {% endif %}
+                            {% if 'pl' in chkReadPermissions(usuario) %}
+                            <a href="/packinglists">
+                                <i class="fa fa-clipboard-list"></i><span>Packing lists</span>
+                            </a>
+                            {% endif %}
+                            {% if 'usuarios' in chkReadPermissions(usuario) %}
+                            <a href="/usuarios" id="usuarios">
+                                <i class="fa fa-users-cog"></i><span>Usuarios</span>
+                            </a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                    {% endif %}
+                    </div>
+                <div class="column has-text-centered has-background-grey-lighter p-0" id="block">
+                    {% block contenido %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+        <footer class="footer has-background-dark p-4" style="min-height: 3.25rem;">
+            <div class="content is-centered px-2 is-size-7-mobile has-text-weight-semibold has-text-light">
+                <p class="m-0" style="float: left;">Customer Specific Cables Services S. de R.L. de C.V.</p>
+                <p class="m-0" style="float: right;">© 2022 CMLB</p>
+            </div>
+        </footer>
+    </body>
+    <script src="../static/sadd.js"></script>
+</html>

@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% block contenido %}
+    <div class="columns m-0">
+        <div class="column is-three-fifths pl-6 pr-5 py-4">
+            {% if permiso == True %}
+            <!-- MODAL -->
+            <div class="modal">
+                <div class="modal-background"></div>
+                    <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Detalles de pedimento</p>
+                        <button class="delete close" aria-label="close"></button>
+                    </header>
+                    <section class="modal-card-body has-text-black">
+                        <table class="table is-bordered is-centered m-auto">
+                            <tbody>
+                                <tr>
+                                    <th>Número de pedimento</th>
+                                    <td><span id="num_pedimento"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha de pedimento</th>
+                                    <td><span id="fecha_pedimento"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha de vencimiento</th>
+                                    <td><span id="fecha_venc"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Material amparado</th>
+                                    <td><span id="material"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Aduana</th>
+                                    <td><span id="aduana"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Exportador</th>
+                                    <td><span id="exportador"></span></td>
+                                </tr>
+                                <tr id="tr_doc">
+                                    <th>Documento</th>
+                                    <td><a id="doc">Ver Documento</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <footer class="modal-card-foot is-centered"></footer>
+                </div>
+            </div>
+            {% endif %}
+            {% if chkAllPermissions(usuario, 'catalogo', 'c') or chkAllPermissions(usuario, 'fp', 'c') or chkAllPermissions(usuario, 'fc', 'c') or chkAllPermissions(usuario, 'pedimentos', 'c') or chkAllPermissions(usuario, 'archivos', 'c') or chkAllPermissions(usuario, 'pl', 'c') %}
+            <div class="box has-background-grey-dark has-text-light mb-4" style="height: calc(65% - 1rem);">
+            {% else %}
+            <div class="box has-background-grey-dark has-text-light mb-4" style="height: 100%;">
+            {% endif %}
+                <h1 class="title is-4 has-text-light has-text-weight-bold">PEDIMENTOS POR VENCER</h1>
+                <div class="columns no-min-height m-0" style="height: calc(100% - 3rem);">
+                    <div id="cont-tarjetas" class="column has-background-grey-lighter mb-0 pr-0" style="border-radius: 6px;">
+                        <!-- TARJETAS PEDIMENTOS -->
+                        <div class="columns no-min-height m-0 pb-2 pr-5" style="height: auto;">
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-7">No. de Pedimento</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-7">Material/Equipo Amparado</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-7">Fecha de vencimiento</p>
+                            </div>
+                        </div>
+                        <div class="box has-background-grey-lighter has-text-light m-0 p-0 pr-3" style="box-shadow: none; height: 90%; overflow-y: auto;">
+                        {% set ped_vencer = {"flag":False} %}
+                        {% if pedimentos|length > 0%}
+                        {% for i in pedimentos|sort(attribute='fecha_venc') %}
+                            {% if i['fecha_venc'] >= fecha %}
+                                {% if ped_vencer.update({"flag":True}) %}{% endif %}
+                                <a class="tarjeta-lg p button is-fullwidth p-0 py-2 has-background-grey-light has-text-black has-text-weight-semibold" id="{{ i['_id'] }}"
+                                data-num_pedimento="{{ i['num_pedimento'] }}" data-fecha_pedimento="{{ i['fecha_pedimento'] }}" data-fecha_venc="{{ i['fecha_venc'] }}" data-material="{{ i['material'] }}"
+                                data-aduana="{{ i['aduana'] }}" data-exportador="{{ i['exportador'] }}" data-doc="{{ i['doc'] }}">
+                                    <div class="columns no-min-height m-0 pb-2">
+                                        <div class="column p-0">
+                                            <p>{{ i['num_pedimento'] }}</p>
+                                        </div>
+                                        <div class="column p-0">
+                                            <p>{{ i['material'] }}</p>
+                                        </div>
+                                        <div class="column p-0">
+                                            <p>{{ i['fecha_venc'] }}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endif %}
+                            {% endfor %}
+                            {% if ped_vencer.flag == False %}
+                            <div class="columns no-min-height is-vcentered m-auto">
+                                <div class="column is-centered">
+                                    <span class="icon is-large has-text-grey"><i class="far fa-folder-open fa-3x"></i></span>
+                                    <h1 class="title is-6 has-text-grey pt-2">No hay pedimentos por vencer</h1>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <div class="columns no-min-height is-vcentered m-auto">
+                                <div class="column is-centered">
+                                    <span class="icon is-large has-text-grey"><i class="far fa-folder-open fa-3x"></i></span>
+                                    <h1 class="title is-6 has-text-grey pt-2">No hay pedimentos registrados</h1>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if chkAllPermissions(usuario, 'catalogo', 'c') or chkAllPermissions(usuario, 'fp', 'c') or chkAllPermissions(usuario, 'fc', 'c') or chkAllPermissions(usuario, 'pedimentos', 'c') or chkAllPermissions(usuario, 'archivos', 'c') or chkAllPermissions(usuario, 'pl', 'c') %}
+            <div class="box has-background-grey-dark has-text-light" style="height: 35%;">
+                <h1 class="title is-4 has-text-light has-text-weight-bold mb-4">AGREGAR NUEVO</h1>
+                <div class="columns no-min-height m-0" style="height: auto;">
+                    {% if chkAllPermissions(usuario, 'catalogo', 'c') %}
+                    <div class="column py-0">
+                        <a class="button is-fullwidth is-light mb-3 has-text-weight-semibold" href="/addC">
+                            <span class="icon">
+                                <i class="fa fa-address-book"></i>
+                            </span>
+                            <span>Cliente / Proveedor</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if chkAllPermissions(usuario, 'fp', 'c') %}
+                    <div class="column py-0">
+                        <a class="button is-fullwidth is-light mb-3 has-text-weight-semibold" href="/addFP">
+                            <span class="icon">
+                                <i class="fa fa-store"></i>
+                            </span>
+                            <span>Factura de proveedor</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if chkAllPermissions(usuario, 'fc', 'c') %}
+                    <div class="column py-0">
+                        <a class="button is-fullwidth is-light mb-3 has-text-weight-semibold" href="/addFC">
+                            <span class="icon">
+                                <i class="fa fa-user"></i>
+                            </span>
+                            <span>Factura de cliente</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="columns is-centered no-min-height m-0" style="height: auto;">
+                    {% if chkAllPermissions(usuario, 'pedimentos', 'c') %}
+                    <div class="column py-0">
+                        <a class="button is-fullwidth is-light mb-3 has-text-weight-semibold" href="/addPed">
+                            <span class="icon">
+                                <i class="fa fa-box-open"></i>
+                            </span>
+                            <span>Pedimento</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if chkAllPermissions(usuario, 'archivos', 'c') %}
+                    <div class="column py-0 mb-3">
+                        <a class="button is-fullwidth is-light mb-3 has-text-weight-semibold" href="/addArchivo">
+                            <span class="icon">
+                                <i class="fa fa-file"></i>
+                            </span>
+                            <span>Archivo</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if chkAllPermissions(usuario, 'pl', 'c') %}
+                    <div class="column py-0 mb-3">
+                        <a class="button is-fullwidth is-light mb-3 has-text-weight-semibold" href="/addPL">
+                            <span class="icon">
+                                <i class="fa fa-clipboard-list"></i>
+                            </span>
+                            <span>Packing list</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="column pr-6 pl-5 py-4">
+            <div class="box has-background-grey-dark has-text-light" style="height: 100%;">
+                <h1 class="title is-4 has-text-light has-text-weight-bold mb-5">GENERAR REPORTE</h1>
+                <form method="POST" style="width: 80%; margin: auto;">
+                    <div class="field has-text-left">
+                        <label class="label subtitle is-5 has-text-light">Tipo de documento</label>
+                        <div class="control">
+                            <div class="is-fullwidth">
+                              <select id="tipo_doc" name="tipo" class="selectize">
+                                <option selected hidden></option>
+                                {% for i in docs %}
+                                    <option value="{{ i['db'] }}">{{ i['tipo'] }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+                    </div>
+                    <label class="label subtitle is-5 has-text-light has-text-left" id="l_fecha">Rango de fechas</label>
+                    <label class="label subtitle is-6 has-text-light has-text-left" id="l_fecha_r" style="display: none;">Fecha recibido</label>
+                    <div class="field has-text-left">
+                        <div class="columns m-0">
+                            <div class="column p-0 mr-4" style="width: calc(50% - 0.5em)">
+                                <div class="control">
+                                    <label class="label is-small has-text-light has-text-left">Inicio</label>
+                                    <input class="input is-small" name="fecha_1_inicio" type="date" disabled required>
+                                </div>
+                            </div>
+                            <div class="column p-0" style="width: calc(50% - 0.5em)">
+                                <div class="control">
+                                    <label class="label is-small has-text-light has-text-left">Fin</label>
+                                    <input class="input is-small" name="fecha_1_fin" type="date" disabled required>
+                                </div>     
+                            </div>
+                        </div>
+                    </div>
+                    <label class="label subtitle is-6 has-text-light has-text-left" id="l_fecha_e" style="display: none;">Fecha enviado</label>
+                    <div class="field has-text-left" id="f_fecha_2" style="display: none;">
+                        <div class="columns m-0">
+                            <div class="column p-0 mr-4" style="width: calc(50% - 0.5em)">
+                                <div class="control">
+                                    <label class="label is-small has-text-light has-text-left">Inicio</label>
+                                    <input class="input is-small" name="fecha_2_inicio" type="date" disabled>
+                                </div>
+                            </div>
+                            <div class="column p-0" style="width: calc(50% - 0.5em)">
+                                <div class="control">
+                                    <label class="label is-small has-text-light has-text-left">Fin</label>
+                                    <input class="input is-small" name="fecha_2_fin" type="date" disabled>
+                                </div>     
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field has-text-left" id="f_fecha_venc">
+                        <label id="vencimiento" class="label subtitle is-5 has-text-light">Fecha de vencimiento</label>
+                        <div class="control">
+                            <input class="input" type="date" name="fecha_venc" disabled>
+                          </div>
+                    </div>
+                    <div class="field has-text-left" id="f_p_c">
+                        <label class="label subtitle is-5 has-text-light"><span id="s_p_c">Proveedor / Cliente</span></label>
+                        <div class="control" id="all" style="display: block;">
+                            <div class="short is-fullwidth">
+                                <select id="registros" class="selectize" disabled>
+                                   <option selected hidden></option>
+                                    {% for i in catalogo %}
+                                        <option value="{{ i['num_registro'] }}">{{ i['nom'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control" id="p" style="display: none;">
+                            <div class="short is-fullwidth">
+                                <select id="registros" name="p" class="selectize">
+                                   <option selected hidden></option>
+                                    {% for i in catalogo %}
+                                    {% if i['tipo'] == 'proveedor' %}
+                                        <option value="{{ i['num_registro'] }}">{{ i['nom'] }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control" id="c" style="display: none;">
+                            <div class="short is-fullwidth">
+                                <select id="registros" name="c" class="selectize">
+                                   <option selected hidden></option>
+                                   {% for i in catalogo %}
+                                   {% if i['tipo'] == 'cliente' %}
+                                       <option value="{{ i['num_registro'] }}">{{ i['nom'] }}</option>
+                                   {% endif %}
+                                   {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field mt-4" id='btn_generar'>
+                        <div class="control">
+                            <button type="submit" class="button is-black px-6">
+                                <span class="icon">
+                                    <i class="fa fa-file-signature"></i>
+                                </span>
+                                <span>Generar reporte</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

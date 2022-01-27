@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block contenido %}
+    <div class="columns m-0">
+        <div class="column px-6 py-4">
+            <div class="box has-background-grey-dark has-text-light" style="height: 100%;">
+                {% if reporte %}
+                <h1 class="title is-4 has-text-light has-text-weight-bold">REPORTE DE ARCHIVOS</h1>
+                {% else %}
+                <h1 class="title is-4 has-text-light has-text-weight-bold">ARCHIVOS</h1>
+                {% endif %}
+                <div class="columns no-min-height m-0" style="height: auto;">
+                    <div class="column p-0">
+                        <div class="control has-icons-left mb-2" style="height: 40px;">
+                            <input class="input is-small is-pulled-left" type="text" id="busqueda" placeholder="Buscar" style="width: 80%;" onkeyup="buscarConc(0, 1, 2, 3)">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="column p-0">
+                        {% if reporte %}
+                        <h1 class="subtitle is-5 has-text-light has-text-weight-bold is-inline">Total de archivos: {{ archivos|length }}</h1>
+                        <h1 class="subtitle is-5 has-text-light has-text-weight-bold is-pulled-right pr-2">Rango: {{ reporte['inicio'] }} a {{ reporte['fin'] }}</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="columns no-min-height m-0 mb-2" style="height: 70%;">
+                    <div id="cont-tarjetas" class="column has-background-grey-lighter mb-0 pr-0" style="border-radius: 6px;">
+                        <div class="columns no-min-height m-0 pb-2 pr-4" style="height: auto;">
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">No. de referencia</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">Nombre de archivo</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">Fecha</p>
+                            </div>
+                            <div class="column p-0">
+                                <p class="subtitle has-text-weight-semibold is-6">Tipo de archivo</p>
+                            </div>
+                        </div>
+                        <!-- MODAL -->
+                        <div class="modal">
+                            <div class="modal-background"></div>
+                            <div class="modal-card">
+                              <header class="modal-card-head">
+                                <p class="modal-card-title">Detalles de archivo</p>
+                                <button class="delete close" aria-label="close"></button>
+                              </header>
+                              <section class="modal-card-body has-text-black">
+                                <table class="table is-bordered is-centered m-auto">
+                                    <tbody>
+                                        <tr>
+                                            <th>Número de referencia</th>
+                                            <td><span id="num_ref"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nombre del archivo</th>
+                                            <td><span id="nom"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <td><span id="fecha"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tipo de archivo</th>
+                                            <td><span id="tipo"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tamaño del archivo</th>
+                                            <td><span id="size"></span></td>
+                                        </tr>
+                                        <tr id="tr_desc">
+                                            <th>Descripción</th>
+                                            <td><span id="desc"></span></td>
+                                        </tr>
+                                            <th>Archivo</th>
+                                            <td><a id="doc">Ver Archivo</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                              </section>
+                              <footer class="modal-card-foot is-centered">
+                                {% if not reporte %}
+                                {% if chkAllPermissions(usuario, 'archivos', 'u') %}
+                                <a class="button is-black" id="editar"><span class="icon"><i class="fas fa-pencil-alt"></i></span>
+                                    <span>Editar</span>
+                                </a>
+                                {% endif %}
+                                {% if chkAllPermissions(usuario, 'archivos', 'd') %}
+                                <div class="dropdown is-up">
+                                    <div class="dropdown-trigger">
+                                      <button class="button is-danger" aria-haspopup="true" aria-controls="dropdown-borrar">
+                                        <span class="icon"><i class="fas fa-trash"></i></span>
+                                        <span>Borrar</span>
+                                      </button>
+                                    </div>
+                                    <div class="dropdown-menu" id="dropdown-borrar" role="menu">
+                                      <div class="dropdown-content">
+                                        <div class="dropdown-item pb-0">
+                                            <p class="has-text-weight-semibold pb-3">¿Desea borrar de manera permanente?</p>
+                                            <a class="button is-fullwidth has-text-weight-semibold has-text-danger-dark py-1" id="borrar">
+                                                <span class="icon"><i class="fas fa-check"></i></span>
+                                                <span>Sí</span>
+                                            </a>
+                                            <a class="button is-fullwidth has-text-weight-semibold has-text-dark py-1">
+                                                <span class="icon"><i class="fas fa-times"></i></span>
+                                                <span>No</span>
+                                            </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% endif %}
+                                {% endif %}
+                              </footer>
+                            </div>
+                          </div>
+                        <!-- TARJETAS -->
+                        <div class="box has-background-grey-lighter has-text-light m-0 p-0 pr-3" style="box-shadow: none; height: 90%; overflow-y: auto;">
+                        {% if archivos|length > 0%}
+                        {% for i in archivos %}
+                        <a class="tarjeta-lg a button is-fullwidth mb-1 p-0 py-2 has-background-grey-light has-text-black has-text-weight-semibold" id="{{ i['_id'] }}"
+                        data-num_ref="{{ i['num_ref'] }}" data-nom="{{ i['datos']['filename'] }}" data-fecha="{{ i['fecha'] }}" data-desc="{{ i['desc'] }}"
+                        data-tipo="{{ i['datos']['metadata'] }}" data-size="{{ i['datos']['length'] }}" data-doc="{{ i['doc'] }}">
+                            <div class="columns no-min-height m-0 pb-2">
+                                <div class="column p-0">
+                                    <p>{{ i['num_ref'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p>{{ i['datos']['filename'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p>{{ i['fecha'] }}</p>
+                                </div>
+                                <div class="column p-0">
+                                    <p>{{ i['datos']['metadata'] }}</p>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                        {% else %}
+                        <div class="columns is-vcentered m-auto">
+                            <div class="column is-centered">
+                                <span class="icon is-xlarge has-text-grey"><i class="far fa-folder-open fa-4x"></i></span>
+                                {% if not reporte %}
+                                <h1 class="title is-5 has-text-grey pt-2">No hay archivos registados</h1>
+                                {% else %}
+                                <h1 class="title is-5 has-text-grey pt-2">No hay archivos registados en ese rango de fechas</h1>
+                                {% endif %}
+                            </div>  
+                        </div>
+                        {% endif %}
+                    </div>
+                    </div>
+                </div>
+                {% if not reporte and chkAllPermissions(usuario, 'archivos', 'c') %}
+                <a class="button has-text-weight-semibold is-black mb-4" href="/addArchivo">
+                    <span class="icon">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    <span>Agregar nuevo archivo</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
