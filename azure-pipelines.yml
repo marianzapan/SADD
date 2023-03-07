@@ -11,7 +11,7 @@ variables:
   azureServiceConnectionId: '89bda48a-7be0-4231-a838-84982049eba7'
 
   # Web app name
-  webAppName: ''
+  webAppName: 'ProyectoSADD'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
